@@ -24,6 +24,7 @@ kotlin {
 
     sourceSets["commonMain"].dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-common")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.7")
     }
 
     sourceSets["androidMain"].dependencies {

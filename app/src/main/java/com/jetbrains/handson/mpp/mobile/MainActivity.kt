@@ -1,8 +1,9 @@
 package com.jetbrains.handson.mpp.mobile
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.flow.map
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,5 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<TextView>(R.id.main_text).text = createApplicationScreenMessage()
+        flow().map {  }
+        MySomething().hello()
     }
 }
