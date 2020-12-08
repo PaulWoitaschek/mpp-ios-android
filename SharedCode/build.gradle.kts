@@ -7,10 +7,12 @@ plugins {
 kotlin {
     //select iOS target platform depending on the Xcode environment variables
     val iOSTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
-        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
-            ::iosArm64
-        else
-            ::iosX64
+            when (System.getenv("SDK_NAME")) {
+                "watchosArm32" -> ::watchosArm32
+                "watchosArm64" -> ::watchosArm64
+                "watchosX86" -> ::watchosX86
+                else -> error("Unspecified")
+            }
 
     iOSTarget("ios") {
         binaries {
@@ -24,7 +26,7 @@ kotlin {
 
     sourceSets["commonMain"].dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-common")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.7")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     }
 
     sourceSets["androidMain"].dependencies {
@@ -43,15 +45,9 @@ val packForXcode by tasks.creating(Sync::class) {
     inputs.property("mode", mode)
     dependsOn(framework.linkTask)
 
-    val targetDir = File(buildDir, "xcode-frameworks")
+    val targetDir = File(File(buildDir, "xcode-frameworks"), System.getenv("SDK_NAME"))
     from({ framework.outputDirectory })
     into(targetDir)
-
-    doLast {
-        val gradlew = File(targetDir, "gradlew")
-        gradlew.writeText("#!/bin/bash\nexport 'JAVA_HOME=${System.getProperty("java.home")}'\ncd '${rootProject.rootDir}'\n./gradlew \$@\n")
-        gradlew.setExecutable(true)
-    }
 }
 
 tasks.getByName("build").dependsOn(packForXcode)
